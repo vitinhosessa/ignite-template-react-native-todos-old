@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { Header } from '../components/Header';
 import { MyTasksList } from '../components/MyTasksList';
@@ -12,6 +13,7 @@ interface Task {
 
 export function Home() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [visualMode, setVisualMode] = useState("dark")
 
   function handleAddTask(newTaskTitle: string) {
     if (!newTaskTitle) return
@@ -44,17 +46,47 @@ export function Home() {
     ))
   }
 
+  function handleToogleVisualMode(){
+    const toggledMode = visualMode === "light" ? "dark" : "light"
+    setVisualMode(toggledMode)
+  }
+
   return (
     <>
-      <Header />
+      <Header visualMode={visualMode}/>
 
-      <TodoInput addTask={handleAddTask} />
+      <View style={visualMode === "light" ? styles.lightbackgroundColor : styles.darkbackgroundColor}> 
+        <TodoInput addTask={handleAddTask} visualMode={visualMode}/>
+      </View>
 
-      <MyTasksList 
-        tasks={tasks} 
-        onPress={handleMarkTaskAsDone} 
-        onLongPress={handleRemoveTask} 
-      />
+      <View style={[styles.container, visualMode === "light" ? styles.lightbackgroundColor : styles.darkbackgroundColor]}> 
+        <MyTasksList
+          tasks={tasks} 
+          onPress={handleMarkTaskAsDone} 
+          onLongPress={handleRemoveTask}
+          visualMode={visualMode}
+        />
+      </View>
+
+      <View style={visualMode === "light" ? styles.lightbackgroundColor : styles.darkbackgroundColor}> 
+        <TouchableOpacity
+          onPress={handleToogleVisualMode}
+        >
+          <Text>Dark Mode</Text>
+        </TouchableOpacity>
+      </View>
     </>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  lightbackgroundColor: {
+    backgroundColor: '#fff',
+  },
+  darkbackgroundColor: {
+    backgroundColor: '#1F1F1F',
+  }
+});
